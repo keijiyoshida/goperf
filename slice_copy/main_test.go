@@ -39,7 +39,7 @@ func BenchmarkCopy(b *testing.B) {
 		n *= 10
 		src := newSlice(n)
 		for _, copyFunc := range copyFuncs {
-			b.Run(fmt.Sprintf("10*%d_%s", i, copyFunc.name), func(b *testing.B) {
+			b.Run(fmt.Sprintf("10**%d_%s", i, copyFunc.name), func(b *testing.B) {
 				for j := 0; j < b.N; j++ {
 					dst := copyFunc.f(src)
 					if src[0] != dst[0] {
