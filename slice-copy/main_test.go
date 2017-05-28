@@ -1,25 +1,24 @@
 /*
-$ go test -bench .
-BenchmarkCopyWithLoop/10**1-4 	30000000	        38.3 ns/op
-BenchmarkCopyWithLoop/10**2-4 	10000000	       184 ns/op
-BenchmarkCopyWithLoop/10**3-4 	 1000000	      1528 ns/op
-BenchmarkCopyWithLoop/10**4-4 	  100000	     10745 ns/op
-BenchmarkCopyWithLoop/10**5-4 	   10000	    127916 ns/op
-BenchmarkCopyWithLoop/10**6-4 	    2000	   1188813 ns/op
-BenchmarkCopyWithLoop/10**7-4 	     100	  11964090 ns/op
-BenchmarkCopyWithLoop/10**8-4 	      10	 127201115 ns/op
-BenchmarkCopyWithCopyFunc/10**1-4         	50000000	        36.7 ns/op
-BenchmarkCopyWithCopyFunc/10**2-4         	10000000	       147 ns/op
-BenchmarkCopyWithCopyFunc/10**3-4         	 1000000	      1095 ns/op
-BenchmarkCopyWithCopyFunc/10**4-4         	  200000	      7758 ns/op
-BenchmarkCopyWithCopyFunc/10**5-4         	   20000	     94143 ns/op
-BenchmarkCopyWithCopyFunc/10**6-4         	    2000	    952457 ns/op
-BenchmarkCopyWithCopyFunc/10**7-4         	     200	   9439476 ns/op
-BenchmarkCopyWithCopyFunc/10**8-4         	      20	  97646540 ns/op
+$ go test -bench . -benchmem
+BenchmarkCopyWithLoop/10**1-4         	30000000	        38.4 ns/op	      80 B/op	       1 allocs/op
+BenchmarkCopyWithLoop/10**2-4         	10000000	       186 ns/op	     896 B/op	       1 allocs/op
+BenchmarkCopyWithLoop/10**3-4         	 1000000	      1463 ns/op	    8192 B/op	       1 allocs/op
+BenchmarkCopyWithLoop/10**4-4         	  200000	     10400 ns/op	   81920 B/op	       1 allocs/op
+BenchmarkCopyWithLoop/10**5-4         	   10000	    108709 ns/op	  802816 B/op	       1 allocs/op
+BenchmarkCopyWithLoop/10**6-4         	    2000	   1072872 ns/op	 8003584 B/op	       1 allocs/op
+BenchmarkCopyWithLoop/10**7-4         	     100	  16618890 ns/op	80003072 B/op	       1 allocs/op
+BenchmarkCopyWithLoop/10**8-4         	      10	 162394552 ns/op	800006152 B/op	       1 allocs/op
+BenchmarkCopyWithCopy/10**1-4         	50000000	        37.1 ns/op	      80 B/op	       1 allocs/op
+BenchmarkCopyWithCopy/10**2-4         	10000000	       151 ns/op	     896 B/op	       1 allocs/op
+BenchmarkCopyWithCopy/10**3-4         	 1000000	      1116 ns/op	    8192 B/op	       1 allocs/op
+BenchmarkCopyWithCopy/10**4-4         	  200000	      7925 ns/op	   81920 B/op	       1 allocs/op
+BenchmarkCopyWithCopy/10**5-4         	   20000	     95059 ns/op	  802816 B/op	       1 allocs/op
+BenchmarkCopyWithCopy/10**6-4         	    2000	    965983 ns/op	 8003584 B/op	       1 allocs/op
+BenchmarkCopyWithCopy/10**7-4         	     200	   9571020 ns/op	80003072 B/op	       1 allocs/op
+BenchmarkCopyWithCopy/10**8-4         	      20	  98683183 ns/op	800006144 B/op	       1 allocs/op
 PASS
-ok  	github.com/keijiyoshida/goperf/slice-copy	44.070s
+ok  	github.com/keijiyoshida/goperf/slice-copy	46.884s
 */
-
 package main
 
 import (
@@ -28,12 +27,22 @@ import (
 	"testing"
 )
 
+func CopyWithLoop(dst, src []float64) {
+	for i, v := range src {
+		dst[i] = v
+	}
+}
+
+func CopyWithCopy(dst, src []float64) {
+	copy(dst, src)
+}
+
 func BenchmarkCopyWithLoop(b *testing.B) {
 	benchmarkCopy(b, CopyWithLoop)
 }
 
-func BenchmarkCopyWithCopyFunc(b *testing.B) {
-	benchmarkCopy(b, CopyWithCopyFunc)
+func BenchmarkCopyWithCopy(b *testing.B) {
+	benchmarkCopy(b, CopyWithCopy)
 }
 
 func benchmarkCopy(b *testing.B, f func([]float64, []float64)) {
